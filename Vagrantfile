@@ -6,17 +6,18 @@ $script = <<SCRIPT
     sudo yum -y install wget
     sudo yum -y install tree
     sudo yum -y install git
-    sudo git clone https://github.com/creationix/nvm.git /home/vagrant/.nvm && cd /home/vagrant/.nvm && git checkout `git describe --abbrev=0 --tags`
-    sudo source ~/.nvm/nvm.sh
     chown vagrant.vagrant -R /home/vagrant
     sudo service docker start
     sudo usermod -aG docker vagrant
     sudo chkconfig docker on
-    sudo docker pull mysql
-    sudo docker pull busybox
-    sudo docker run -v /var/lib/mysql --name mysql_data busybox
-    sudo docker run --volumes-from mysql_data --name mysql -e MYSQL_ROOT_PASSWORD=mysql -d -p 3306:3306 mysql
-
+    sudo mkdir /opt/bin
+    COMPOSE_VERSION=1.18.0
+    sudo curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /opt/bin/docker-compose
+    sudo chmod +x /opt/bin/docker-compose
+    sudo mkdir /var/opt/mysql
+    sudo chown vagrant:vagrant -R /var/opt/mysql
+    sudo mkdir -p /home/vagrant/mysql/init
+    sudo chown vagrant:vagrant -R /home/vagrant/mysql
 SCRIPT
 
 Vagrant.configure("2") do |config|
